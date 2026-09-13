@@ -110,6 +110,24 @@ spustí okamžitě) a kratším kontrolním intervalem (technik čeká u zaříz
    tovární sketch se tím přepíše a už nikdy neběží znovu (dokud by se přes USB nenahrál
    podruhé, např. při reklamaci).
 
+### Flashování - `factory-template/!flash/`
+
+Univerzální flash skript (ESP8266 i ESP32, žádné projektové závislosti) - zkopírujte
+celou složku `!flash/` vedle továrního sketch. Zkompilovaný `.bin` (`arduino-cli compile
+--export-binaries` nebo Arduino IDE `Sketch -> Export compiled Binary`) se dá do
+`!flash/bin/` a spustí se skript ze složky `!flash`:
+
+- Windows: `python flash.py`
+- Linux/macOS: `./flash.sh`
+
+Skript sám zkontroluje/nabídne doinstalovat `esptool`/`pyserial` (Windows) nebo
+`python3`/`pip`/`esptool`/oprávnění k sériovému portu (Linux/macOS), najde USB
+zařízení a typ čipu (ESP8266/ESP32 - podle toho zvolí správné adresy pro `write_flash`),
+smaže flash a nahraje firmware. Pokud je ve `bin/` víc `.bin` souborů (např. tovární i
+ostrý firmware najednou), nabídne výběr, který nahrát. Samostatná volba `--monitor`
+otevře sériový monitor (115200 baud), `--info` zobrazí informace o čipu, `--erase` jen
+smaže flash.
+
 ## Architektura
 
 | Modul | Zavislosti | Ucel |

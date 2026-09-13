@@ -12,7 +12,8 @@ se jim vyhnout (viz sekce "Poučení z praxe" - **přečti si ji celou, než za�
 Stáhni/přečti si z tohoto repozitáře (`esp-ota`):
 - `README.md` - architektura, klíčová rozhodnutí a jejich odůvodnění
 - `template/*.h`, `template/*.cpp`, `template/OtaConfig.example.h` - hotový, testovaný OTA klient
-- `factory-template/*` - hotová, testovaná šablona továrního/provisioning firmware
+- `factory-template/*` - hotová, testovaná šablona továrního/provisioning firmware,
+  včetně `!flash/` (univerzální, na projektu nezávislý flash skript pro ESP8266/ESP32)
 - `workflows/release.yml.template`, `scripts/release.ps1.template` - šablony release automatizace
 
 **Nepiš OTA systém od nuly.** Tvým úkolem je *adaptovat* soubory z `template/` a
@@ -94,6 +95,12 @@ druhý, samostatný sketch pro tovární přípravu nových/vrácených kusů, p
    modul pro perzistenci, stejný vzor jako `OtaState` (write-temp-then-rename).
 5. Připomeň uživateli: tovární firmware nainstaluje **existující** GitHub Release - dokud
    repozitář žádný nemá, bude jen dokola zkoušet.
+6. Zkopíruj `factory-template/!flash/` (celou složku vč. `flash.py`, `flash.sh`,
+   `bin/`) vedle nového továrního sketch. Je to univerzální, na projektu nezávislý
+   flash skript (ESP8266 i ESP32) - **needituj ho**, jen do `!flash/bin/` bude uživatel
+   dávat zkompilovaný `.bin`. Řekni uživateli, jak se používá (`python flash.py` /
+   `./flash.sh`, `--monitor` pro sériový monitor) - viz README.md v tomto repozitáři,
+   sekce "Flashování".
 
 ## Fáze 4: Release automatizace
 
