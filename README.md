@@ -9,6 +9,12 @@ Tento balíček **není knihovna ke stažení** - je to sada zdrojových soubor�
 zkopírování do vaší sketch složky + dokumentace k tomu, jak je zapojit a proč jsou
 navržené tak, jak jsou.
 
+**Používáte Claude Code (nebo jiného AI agenta)?** Stačí mu dát odkaz na tento repozitář
+a ať postupuje podle [`AGENT_PROMPT.md`](AGENT_PROMPT.md) - ten ho navede, aby nejdřív
+ověřil, jestli OTA na vašem konkrétním hardwaru/frameworku dává smysl, a pak implementoval
+kompletní systém včetně továrního/provisioning firmware (`factory-template/`), přesně jak
+je popsáno níže.
+
 ## Co to dělá
 
 Zařízení si samo, na pozadí, kontroluje GitHub Releases vašeho repozitáře. Když najde
@@ -82,6 +88,27 @@ téhle jedné věty - viz "Klíčová rozhodnutí" níže.
    vlastní komentáře pro úpravy) - řeší automatický build+publikaci Release po pushnutí tagu.
 
 6. Ověřte reálnou kompilací: `arduino-cli compile --fqbn esp8266:esp8266:d1_mini --warnings all <sketch-slozka>`.
+
+## Tovární (provisioning) firmware - `factory-template/`
+
+Druhá polovina systému: samostatný sketch, který se nahraje **místo** ostrého firmware na
+nové/vrácené kusy před expedicí. Připojí zařízení k WiFi zákazníka/technika a hned poté si
+samo stáhne a nainstaluje nejnovější release - používá stejný OTA klient jako ostrý
+firmware, jen s `FIRMWARE_VERSION = "0.0.0"` (vždy nižší než reálný release, takže OTA se
+spustí okamžitě) a kratším kontrolním intervalem (technik čeká u zařízení).
+
+1. Vytvořte novou složku/sketch (např. `factory-<projekt>`), zkopírujte do ní
+   `factory-template/factory-sw.ino` a znovu `OtaVersion/Sha256/OtaState/OtaManager`
+   (stejné soubory jako výše - Arduino kompiluje sketch složky zvlášť).
+2. Zkopírujte `factory-template/OtaConfig.example.h` jako `OtaConfig.h` - `FIRMWARE_TARGET`/
+   `GITHUB_OWNER`/`GITHUB_REPOSITORY` musí být **identické** s ostrým firmware.
+3. Přizpůsobte `AP_NAME` a případně přidejte zobrazování stavu na displeji/LED
+   (`OtaManager::setStatusCallback`) nebo další pole do WiFi portálu, pokud vaše ostré
+   firmware potřebuje od zákazníka další údaj při prvním nastavení (komentáře v
+   `factory-sw.ino` ukazují kam).
+4. Po úspěšné instalaci se zařízení samo restartuje a běží dál jako ostrý firmware -
+   tovární sketch se tím přepíše a už nikdy neběží znovu (dokud by se přes USB nenahrál
+   podruhé, např. při reklamaci).
 
 ## Architektura
 
