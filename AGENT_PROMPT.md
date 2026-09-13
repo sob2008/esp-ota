@@ -64,7 +64,7 @@ Pokud OTA na daném hardwaru/frameworku **nedává smysl nebo nejde bezpečně i
    `template/OtaManager.h/.cpp` do složky cílového sketch/projektu.
 2. Zkopíruj `template/OtaConfig.example.h` jako `OtaConfig.h`, vyplň `FIRMWARE_TARGET`,
    `GITHUB_OWNER`, `GITHUB_REPOSITORY` podle skutečného repozitáře uživatele.
-3. Zapoj podle přesného pořadí v `template/README.md` (`OtaState::begin()` a
+3. Zapoj podle přesného pořadí v `README.md` (sekce "Rychlý start" - `OtaState::begin()` a
    `OtaManager::begin()` **před** připojením WiFi, `notifyApplicationHealthy()` až po
    prvním úspěšném cyklu hlavní funkce zařízení, `OtaManager::handle()` v `loop()`).
 4. Pokud má cílové zařízení nebezpečné výstupy (relé, motory...), přidej před OTA krokem
@@ -155,8 +155,9 @@ teoretické, jsou to skutečné bugy, které se staly a byly opravené:
    jestli k restartu skutečně došlo hned. Kdyby se stav zapsal až po tomto potvrzení,
    existuje okno (výpadek napájení přesně mezi potvrzením a zápisem stavu), kdy by
    zařízení nabootovalo nevalidovaný firmware, aniž by o tom sledování stavu vědělo -
-   ztráta rollback ochrany. Viz `OtaManager::downloadAndApply()` a `OtaState::begin()`
-   v tomto repozitáři (detekce "stale" pending stavu podle skutečně běžící verze).
+   ztráta rollback ochrany. Viz `OtaManager::downloadAndApply()` (zápis stavu) a
+   `OtaManager::begin()` v tomto repozitáři (detekce "stale" pending stavu porovnáním
+   s compile-time `FIRMWARE_VERSION` skutečně běžícího firmware).
 
 3. **ESP8266 nemá nativní rollback ani A/B partition switch jako ESP32** - `Update`/
    `eboot` je ping-pong kopírovací mechanismus, ne instantní přepnutí bootovací partition.
